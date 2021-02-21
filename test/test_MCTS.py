@@ -1,11 +1,12 @@
 from unittest import TestCase
-from MCTS import MCTS, Node, Edge, Stats
 from unittest.mock import patch
+
+from foundation.MCTS import Node, MCTS, Stats, Edge
 
 
 class TestMCTS(TestCase):
 
-    @patch('game.GameState')
+    @patch('foundation.igame.IGameState')
     def test(self, gameState):
         CPUCT = 1 # defined in config
         gameState.playerTurn = 1
@@ -14,7 +15,7 @@ class TestMCTS(TestCase):
         currentNode, value, done, breadcrumbs = mcts.moveToLeaf()
         self.assertEqual(currentNode.playerTurn, 1)
 
-    @patch('game.GameState')
+    @patch('foundation.igame.IGameState')
     def test_node_Nb(self, gameState):
         node = Node(gameState)
         inNode = Node(gameState)
@@ -28,8 +29,8 @@ class TestMCTS(TestCase):
         nb = node._Nb()
         self.assertEqual(20, nb)
 
-    @patch('game.GameState')
-    @patch("MCTS.np.random.dirichlet")
+    @patch('foundation.igame.IGameState')
+    @patch("foundation.MCTS.np.random.dirichlet")
     def test_find_move(self, dirichlet, gameState):
         dirichlet.return_value = [0.1, 0.5]
         node = Node(gameState)
