@@ -1,6 +1,7 @@
 # introduction
 
 This is a refactor of [AppliedDataSciencePartners/DeepReinforcementLearning](https://github.com/AppliedDataSciencePartners/DeepReinforcementLearning)
+
 The code is related to [How to build your own AlphaZero AI using Python and Keras](https://medium.com/applied-data-science/how-to-build-your-own-alphazero-ai-using-python-and-keras-7f664945c188)
 
 # How to run it?
@@ -12,6 +13,7 @@ The code is related to [How to build your own AlphaZero AI using Python and Kera
 
 # Road map
 
+1. Improve documentation
 1. Fix jupyter notebook
 1. Add unit test
 1. Add profiler instrumentation
@@ -27,4 +29,6 @@ The code is related to [How to build your own AlphaZero AI using Python and Kera
 # Resource Links
 
 1. Article [How to build your own AlphaZero AI using Python and Keras](https://medium.com/applied-data-science/how-to-build-your-own-alphazero-ai-using-python-and-keras-7f664945c188)
-2. Video [AlphaGo Zero Tutorial Part 2 - Monte Carlo Tree Search](https://www.youtube.com/watch?v=NjeYgIbPMmg)
+1. Video [AlphaGo Zero Tutorial Part 2 - Monte Carlo Tree Search](https://www.youtube.com/watch?v=NjeYgIbPMmg)
+1. [Multiplayer AlphaZero](https://arxiv.org/pdf/1910.13012.pdf)
+1. [AlphaZero implementation and tutorial](https://towardsdatascience.com/alphazero-implementation-and-tutorial-f4324d65fdfc)
