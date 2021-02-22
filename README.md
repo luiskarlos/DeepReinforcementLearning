@@ -6,7 +6,11 @@
 This is a refactor of [AppliedDataSciencePartners/DeepReinforcementLearning](https://github.com/AppliedDataSciencePartners/DeepReinforcementLearning)
 part of the article [How to build your own AlphaZero AI using Python and Keras](https://medium.com/applied-data-science/how-to-build-your-own-alphazero-ai-using-python-and-keras-7f664945c188)
 
-The purpose of the refactor is to make easy to add new games and also add more documentation and explain the algorithms
+### The purpose of the refactor
+1. Make experimentation easier 
+1. Add more documentation
+1. Explain the algorithms
+1. Improve performance
 
 # How to run it?
 
