@@ -1,7 +1,6 @@
 # introduction
-> AlphaGo → AlphaGo Zero → AlphaZero
-> In March 2016, Deepmind’s AlphaGo beat 18 times world champion Go player Lee Sedol 4–1 in a series watched by over 200 million people. A machine had learnt a super-human strategy for playing Go, a feat previously thought impossible, or at the very least, at least a decade away from being accomplished.
-> [How to build your own AlphaZero AI using Python and Keras](https://medium.com/applied-data-science/how-to-build-your-own-alphazero-ai-using-python-and-keras-7f664945c188)
+> AlphaGo is the first computer program to defeat a professional human Go player, the first to defeat a Go world champion, and is arguably the strongest Go player in history.
+>> [Deepmind](https://deepmind.com/research/case-studies/alphago-the-story-so-far)
 
 ## What is in this repo?
 This is a refactor of [AppliedDataSciencePartners/DeepReinforcementLearning](https://github.com/AppliedDataSciencePartners/DeepReinforcementLearning)
@@ -35,11 +34,13 @@ The purpose of the refactor is to make easy to add new games and also add more d
     1. Player VS NPC
     1. NPC VS NPC
     1. Interactive learning process
+ 1. Config
+    1. Make config adjustable by game
+        1. Parameters can vary from game to game, having all in one config makes it difficult for experimentation 
+    1. Use defaults
+    
 
 # Wondering
-1. Should all configuration be related to the game?
-    1. Should the complexity of the game be reflected in config?
-    1. if so the configuration we should have defaults and game specific
 
 # Resource Links
 
