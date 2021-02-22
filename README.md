@@ -34,7 +34,9 @@ part of the article [How to build your own AlphaZero AI using Python and Keras](
     1. Improve log data
 1. Add stats to a DB (remove some logs)
 1. Update to tensorflow 2
-1. Add online demo
+1. Add capacity to migrate models to [TensorFlow.js](https://www.tensorflow.org/js)
+1. Add online demos
+    1. Use [TensorFlow.js](https://www.tensorflow.org/js) models in online games
     1. Player VS NPC
     1. NPC VS NPC
     1. Interactive learning process
