@@ -3,7 +3,7 @@ import random
 import pickle
 from typing import Callable
 
-from foundation.IGame import IGame
+from foundation.igame import IGame
 from foundation.memory import Memory
 from foundation.model import Residual_CNN, Gen_Model
 from foundation.agent import Agent, User
@@ -16,7 +16,7 @@ class Director:
     
     def __init__(self, gameProvider=Callable[[], IGame]):
         self.gameProvider = gameProvider
-        self.gameEnv = gameProvider()
+        self.gameEnv: IGame = gameProvider()
         # create an untrained neural network objects from the config file
         self.best_player_version = 0
         self.current_NN = self._createCNN()
@@ -45,8 +45,10 @@ class Director:
         self.best_NN.model.set_weights(self.current_NN.model.get_weights())
     
     def _createCNN(self) -> Residual_CNN:
-        return Residual_CNN(config.REG_CONST, config.LEARNING_RATE, (2,) + self.gameEnv.grid_shape,
-                            self.gameEnv.action_size, config.HIDDEN_CNN_LAYERS)
+        return Residual_CNN(config.REG_CONST, config.LEARNING_RATE,
+                            input_dim=(2,) + self.gameEnv.grid_shape,
+                            output_dim=self.gameEnv.action_size,
+                            hidden_layers=config.HIDDEN_CNN_LAYERS)
     
     def _createAgent(self, name: str, CNN: Residual_CNN) -> Agent:
         return Agent(name, self.gameEnv.state_size, self.gameEnv.action_size, config.MCTS_SIMS, config.CPUCT, CNN)
@@ -56,8 +58,10 @@ class Director:
         if player1version == -1:
             player1 = User('player1', env.state_size, env.action_size)
         else:
-            player1_NN = Residual_CNN(config.REG_CONST, config.LEARNING_RATE, env.input_shape, env.action_size,
-                                      config.HIDDEN_CNN_LAYERS)
+            player1_NN = Residual_CNN(config.REG_CONST, config.LEARNING_RATE,
+                                      input_dim=env.input_shape,  # why the input shape is here? (see _createCNN)
+                                      output_dim=env.action_size,
+                                      hidden_layers=config.HIDDEN_CNN_LAYERS)
             
             if player1version > 0:
                 player1_network = player1_NN.read(env.name, run_version, player1version)
@@ -105,7 +109,7 @@ class Director:
                 player1Starts * -1: {"agent": player2, "name": player2.name}
             }
             
-            results.setStart(players[1])
+            results.setStart(players[1]["agent"])
             logger.info(players[1]["name"] + ' plays as X')
             logger.info('--------------')
             

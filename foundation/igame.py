@@ -2,7 +2,6 @@ from abc import abstractmethod, ABC
 
 
 class IGame(ABC):
-    
     @abstractmethod
     def reset(self):
         ...
@@ -17,6 +16,7 @@ class IGame(ABC):
 
 
 class IGameState(ABC):
+   
     @abstractmethod
     def _allowedActions(self):
         ...

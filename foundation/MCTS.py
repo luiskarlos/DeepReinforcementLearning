@@ -2,6 +2,7 @@ import numpy as np
 from functional import seq
 from enum import Enum, auto
 
+from foundation.igame import IGameState
 from utils import config, loggers as lg
 
 
@@ -16,7 +17,7 @@ class Stats(Enum):
 
 
 class Node:
-    def __init__(self, state):
+    def __init__(self, state: IGameState):
         self.state = state
         self.playerTurn = state.playerTurn  # TODO: lk - remove this
         self.id = state.id
@@ -121,7 +122,7 @@ class MCTS:
     
     def moveToLeaf(self):
         lg.logger_mcts.info('------MOVING TO LEAF------')
-        breadcrumbs = []
+        breadcrumbs: [Edge] = []
         currentNode = self.root
         
         done = 0
@@ -143,7 +144,7 @@ class MCTS:
         return currentNode, value, done, breadcrumbs
     
     @staticmethod
-    def backFill(leaf: Node, value, breadcrumbs):
+    def backFill(leaf: Node, value, breadcrumbs: [Edge]):
         lg.logger_mcts.info('------DOING BACKFILL------')
         
         currentPlayer = leaf.state.playerTurn

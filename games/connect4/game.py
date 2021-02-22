@@ -1,9 +1,9 @@
 import numpy as np
-import logging
+
 
 class Game:
 
-	def __init__(self):		
+	def __init__(self):
 		self.currentPlayer = 1
 		self.gameState = GameState(np.array([0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0], dtype=np.int), 1)
 		self.actionSpace = np.array([0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0], dtype=np.int)
@@ -217,7 +217,7 @@ class GameState():
 			value = newState.value[0]
 			done = 1
 
-		return (newState, value, done) 
+		return (newState, value, done)
 
 
 

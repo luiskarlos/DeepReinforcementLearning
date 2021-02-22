@@ -1,6 +1,6 @@
 import numpy as np
 
-from foundation.IGame import IGame, IGameState
+from foundation.igame import IGame, IGameState
 
 
 class Connect4Game(IGame):

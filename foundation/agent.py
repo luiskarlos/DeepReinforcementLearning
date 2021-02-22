@@ -79,7 +79,7 @@ class Agent:
             self.simulate()
         
         # ### get action values
-        pi, values = self.getAV(1)
+        pi, values = self.getActionValue(1)
         
         # ###pick the action
         action, value = self.chooseAction(pi, values, tau)
@@ -147,7 +147,7 @@ class Agent:
         
         return value, breadcrumbs
     
-    def getAV(self, tau):
+    def getActionValue(self, tau):
         edges = self.mcts.root.edges
         pi = np.zeros(self.action_size, dtype=np.integer)
         values = np.zeros(self.action_size, dtype=np.float32)
