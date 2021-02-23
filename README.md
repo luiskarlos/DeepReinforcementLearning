@@ -54,3 +54,4 @@ part of the article [How to build your own AlphaZero AI using Python and Keras](
 1. Video [AlphaGo Zero Tutorial Part 2 - Monte Carlo Tree Search](https://www.youtube.com/watch?v=NjeYgIbPMmg)
 1. [Multiplayer AlphaZero](https://arxiv.org/pdf/1910.13012.pdf)
 1. [AlphaZero implementation and tutorial](https://towardsdatascience.com/alphazero-implementation-and-tutorial-f4324d65fdfc)
+1. [DeepMind’s MuZero is One of the Most Important Deep Learning Systems Ever…](https://www.kdnuggets.com/2021/01/deepmind-muzero-important-deep-learning-systems.html)

@@ -12,7 +12,7 @@ class TestMCTS(TestCase):
         gameState.playerTurn = 1
         node = Node(gameState)
         mcts = MCTS(node, CPUCT)
-        currentNode, value, done, breadcrumbs = mcts.moveToLeaf()
+        currentNode, _, _, breadcrumbs, _ = mcts.moveToLeaf()
         self.assertEqual(currentNode.playerTurn, 1)
 
     @patch('foundation.igame.IGameState')

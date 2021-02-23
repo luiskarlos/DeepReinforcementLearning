@@ -97,7 +97,6 @@ class Director:
             
             state = gameEnv.reset()
             
-            done = 0
             turn = 0
             player1.mcts = None
             player2.mcts = None
@@ -115,7 +114,7 @@ class Director:
             
             gameEnv.gameState.render(logger)
             
-            while done == 0:
+            while not state.isFinish():
                 turn = turn + 1
                 
                 # ### Run the MCTS algo and return an action
@@ -138,22 +137,21 @@ class Director:
                 logger.info('====================')
                 
                 # ## Do the action
-                state, value, done, _ = gameEnv.step(action)
+                state, _ = gameEnv.step(action)
                 # the value of the newState from the POV of the new playerTurn i.e.
                 # value = -1 if the previous player played a winning move
                 
                 gameEnv.gameState.render(logger)
-                
-                if done == 1:
+                if state.isFinish():
                     if memory is not None:
                         # # ## If the game is finished, assign the values correctly to the game moves
-                        memory.commit_ltmemory(state.playerTurn, value)
+                        memory.commit_ltmemory(state.playerTurn, state.getValue())
                     
-                    if value == 1:
+                    if state.getValue() == 1:
                         logger.info('%s WINS!', players[state.playerTurn]['name'])
                         results.won(players[state.playerTurn]['agent'])
                     
-                    elif value == -1:
+                    elif state.getValue() == -1:
                         logger.info('%s WINS!', players[-state.playerTurn]['name'])
                         results.won(players[-state.playerTurn]['agent'])
                     

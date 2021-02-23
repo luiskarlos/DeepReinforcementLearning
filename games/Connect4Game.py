@@ -28,11 +28,11 @@ class Connect4Game(IGame):
         return self.gameState
     
     def step(self, action):
-        next_state, value, done = self.gameState.takeAction(action)
+        next_state = self.gameState.takeAction(action)
         self.gameState = next_state
         self.currentPlayer = -self.currentPlayer
         info = None
-        return next_state, value, done, info
+        return next_state, info
     
     def identities(self, state, actionValues):
         identities = [(state, actionValues)]
@@ -41,12 +41,18 @@ class Connect4Game(IGame):
         currentAV = actionValues
         
         currentBoard = np.array([
-            currentBoard[6], currentBoard[5], currentBoard[4], currentBoard[3], currentBoard[2], currentBoard[1], currentBoard[0],
-            currentBoard[13], currentBoard[12], currentBoard[11], currentBoard[10], currentBoard[9], currentBoard[8], currentBoard[7],
-            currentBoard[20], currentBoard[19], currentBoard[18], currentBoard[17], currentBoard[16], currentBoard[15], currentBoard[14],
-            currentBoard[27], currentBoard[26], currentBoard[25], currentBoard[24], currentBoard[23], currentBoard[22], currentBoard[21],
-            currentBoard[34], currentBoard[33], currentBoard[32], currentBoard[31], currentBoard[30], currentBoard[29], currentBoard[28],
-            currentBoard[41], currentBoard[40], currentBoard[39], currentBoard[38], currentBoard[37], currentBoard[36], currentBoard[35]
+            currentBoard[6], currentBoard[5], currentBoard[4], currentBoard[3], currentBoard[2], currentBoard[1],
+            currentBoard[0],
+            currentBoard[13], currentBoard[12], currentBoard[11], currentBoard[10], currentBoard[9], currentBoard[8],
+            currentBoard[7],
+            currentBoard[20], currentBoard[19], currentBoard[18], currentBoard[17], currentBoard[16], currentBoard[15],
+            currentBoard[14],
+            currentBoard[27], currentBoard[26], currentBoard[25], currentBoard[24], currentBoard[23], currentBoard[22],
+            currentBoard[21],
+            currentBoard[34], currentBoard[33], currentBoard[32], currentBoard[31], currentBoard[30], currentBoard[29],
+            currentBoard[28],
+            currentBoard[41], currentBoard[40], currentBoard[39], currentBoard[38], currentBoard[37], currentBoard[36],
+            currentBoard[35]
         ])
         
         currentAV = np.array([
@@ -145,8 +151,8 @@ class Connect4GameState(IGameState):
         self.binary = self._binary()
         self.id = self._convertStateToId()
         self.allowedActions = self._allowedActions()
-        self.isEndGame = self._checkForEndGame()
         self.value = self._getValue()
+        self.isEndGame = self._checkForEndGame()
         self.score = self._getScore()
     
     def _allowedActions(self):
@@ -187,20 +193,17 @@ class Connect4GameState(IGameState):
         return id
     
     def _checkForEndGame(self):
-        if np.count_nonzero(self.board) == 42:
+        if np.count_nonzero(self.board) == 42:  # isBoard full
             return 1
         
-        for x, y, z, a in self.winners:
-            if self.board[x] + self.board[y] + self.board[z] + self.board[a] == 4 * -self.playerTurn:
-                return 1
-        return 0
+        return 1 if self.getValue() != 0 else 0
     
     def _getValue(self):
         # This is the value of the state for the current player
         # i.e. if the previous player played a winning move, you lose
         for x, y, z, a in self.winners:
             if self.board[x] + self.board[y] + self.board[z] + self.board[a] == 4 * -self.playerTurn:
-                return -1, -1, 1
+                return -self.playerTurn, -1, 1  # TODO: maybe there was a big bug here this was -1, -1, 1. This needs to be corroborated
         return 0, 0, 0
     
     def _getScore(self):
@@ -213,16 +216,15 @@ class Connect4GameState(IGameState):
         
         newState = Connect4GameState(newBoard, -self.playerTurn)
         
-        value = 0
-        done = 0
-        
-        if newState.isEndGame:
-            value = newState.value[0]
-            done = 1
-        
-        return newState, value, done
+        return newState
     
     def render(self, logger):
         for r in range(6):
             logger.info([self.pieces[str(x)] for x in self.board[7 * r: (7 * r + 7)]])
         logger.info('--------------')
+    
+    def isFinish(self):
+        return self.isEndGame
+    
+    def getValue(self):
+        return self.value[0]
