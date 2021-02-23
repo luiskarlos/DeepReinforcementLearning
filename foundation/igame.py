@@ -1,7 +1,14 @@
-from abc import abstractmethod, ABC
+from abc import abstractmethod, ABC, abstractproperty
 
 
 class IGame(ABC):
+    def __init__(self):
+        self.name = None  # TODO: This are all required and will be change to methods
+        self.input_shape = None
+        self.grid_shape = None
+        self.action_size = None
+        self.gameState = None
+   
     @abstractmethod
     def reset(self):
         ...
@@ -12,34 +19,18 @@ class IGame(ABC):
     
     @abstractmethod
     def identities(self, state, actionValues):
+        """
+        https://github.com/AppliedDataSciencePartners/DeepReinforcementLearning/issues/36#issuecomment-573392639
+        For a data augmentation.
+        To make a lot of data, the mirror versions are used.
+        """
         ...
 
 
 class IGameState(ABC):
-   
-    @abstractmethod
-    def _allowedActions(self):
-        ...
-
-    @abstractmethod
-    def _binary(self):
-        ...
-
-    @abstractmethod
-    def _convertStateToId(self):
-        ...
-
-    @abstractmethod
-    def _checkForEndGame(self):
-        ...
-
-    @abstractmethod
-    def _getValue(self):
-        ...
-
-    @abstractmethod
-    def _getScore(self):
-        ...
+    def __init__(self):
+        self.id = None  # TODO: This are all required and will be change to methods
+        self.playerTurn = None
 
     @abstractmethod
     def takeAction(self, action):
@@ -47,4 +38,12 @@ class IGameState(ABC):
 
     @abstractmethod
     def render(self, logger):
+        ...
+
+    @abstractmethod
+    def getValue(self):
+        ...
+
+    @abstractmethod
+    def isFinish(self):
         ...
