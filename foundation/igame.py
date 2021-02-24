@@ -8,7 +8,6 @@ class IGame(ABC):
         self.grid_shape = None
         self.action_size = None
         self.gameState = None
-        self.players = []
    
     @abstractmethod
     def reset(self):
@@ -30,7 +29,6 @@ class IGame(ABC):
 
 class IGameState(ABC):
     def __init__(self):
-        self.id = None  # TODO: This are all required and will be change to methods
         self.playerTurn = None
 
     @abstractmethod
@@ -46,7 +44,7 @@ class IGameState(ABC):
         ...
     
     @abstractmethod
-    def takeAction(self, action):
+    def takeAction(self, action) -> 'IGameState':
         ...
 
     @abstractmethod
@@ -55,14 +53,6 @@ class IGameState(ABC):
 
     @abstractmethod
     def values(self):
-        ...
-
-    @abstractmethod
-    def score(self):
-        ...
-    
-    @abstractmethod
-    def isEndGame(self):
         ...
 
     @abstractmethod
