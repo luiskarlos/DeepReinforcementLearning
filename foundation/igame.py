@@ -1,4 +1,4 @@
-from abc import abstractmethod, ABC, abstractproperty
+from abc import abstractmethod, ABC
 
 
 class IGame(ABC):
@@ -8,6 +8,7 @@ class IGame(ABC):
         self.grid_shape = None
         self.action_size = None
         self.gameState = None
+        self.players = []
    
     @abstractmethod
     def reset(self):
@@ -33,6 +34,18 @@ class IGameState(ABC):
         self.playerTurn = None
 
     @abstractmethod
+    def allowedActions(self):
+        ...
+
+    @abstractmethod
+    def binary(self):
+        ...
+
+    @abstractmethod
+    def id(self):
+        ...
+    
+    @abstractmethod
     def takeAction(self, action):
         ...
 
@@ -41,9 +54,24 @@ class IGameState(ABC):
         ...
 
     @abstractmethod
-    def getValue(self):
+    def values(self):
         ...
 
     @abstractmethod
-    def isFinish(self):
+    def score(self):
         ...
+    
+    @abstractmethod
+    def isEndGame(self):
+        ...
+
+    @abstractmethod
+    def getWinner(self):
+        ...
+
+    def __getstate__(self):
+        state = self.__dict__
+        for key in list(state):
+            if callable(state[key]):
+                del state[key]
+        return state

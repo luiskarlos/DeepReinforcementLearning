@@ -114,23 +114,23 @@ class Director:
             
             gameEnv.gameState.render(logger)
             
-            while not state.isFinish():
+            while not state.isEndGame():
                 turn = turn + 1
                 
                 # ### Run the MCTS algo and return an action
                 if turn < turns_until_tau0:
-                    action, pi, MCTS_value, NN_value = players[state.playerTurn]['agent'].act(state, 1)
+                    action, actionValues, MCTS_value, NN_value = players[state.playerTurn]['agent'].act(state, 1)
                 else:
-                    action, pi, MCTS_value, NN_value = players[state.playerTurn]['agent'].act(state, 0)
+                    action, actionValues, MCTS_value, NN_value = players[state.playerTurn]['agent'].act(state, 0)
                 
                 if memory is not None:
                     # ###Commit the move to memory
-                    memory.commit_stmemory(gameEnv.identities(state, pi))
+                    memory.commit_stmemory(gameEnv.identities(state, actionValues))
                 
                 logger.info('action: %d', action)
                 for r in range(gameEnv.grid_shape[0]):
                     logger.info(['----' if x == 0 else '{0:.2f}'.format(np.round(x, 2)) for x in
-                                 pi[gameEnv.grid_shape[1] * r: (gameEnv.grid_shape[1] * r + gameEnv.grid_shape[1])]])
+                                 actionValues[gameEnv.grid_shape[1] * r: (gameEnv.grid_shape[1] * r + gameEnv.grid_shape[1])]])
                 logger.info('MCTS perceived value for %s: %f', state.pieces[str(state.playerTurn)],
                             np.round(MCTS_value, 2))
                 logger.info('NN perceived value for %s: %f', state.pieces[str(state.playerTurn)], np.round(NN_value, 2))
@@ -142,16 +142,16 @@ class Director:
                 # value = -1 if the previous player played a winning move
                 
                 gameEnv.gameState.render(logger)
-                if state.isFinish():
+                if state.isEndGame():
                     if memory is not None:
                         # # ## If the game is finished, assign the values correctly to the game moves
-                        memory.commit_ltmemory(state.playerTurn, state.getValue())
+                        memory.commit_ltmemory(state.playerTurn, state.getWinner())
                     
-                    if state.getValue() == 1:
+                    if state.getWinner() == 1:
                         logger.info('%s WINS!', players[state.playerTurn]['name'])
                         results.won(players[state.playerTurn]['agent'])
                     
-                    elif state.getValue() == -1:
+                    elif state.getWinner() == -1:
                         logger.info('%s WINS!', players[-state.playerTurn]['name'])
                         results.won(players[-state.playerTurn]['agent'])
                     
@@ -159,8 +159,8 @@ class Director:
                         logger.info('DRAW...')
                         results.draw()
                     
-                    results.addPoints(players[state.playerTurn]['agent'], state.score[0])
-                    results.addPoints(players[-state.playerTurn]['agent'], state.score[1])
+                    results.addPoints(players[state.playerTurn]['agent'], state.score()[0])
+                    results.addPoints(players[-state.playerTurn]['agent'], state.score()[1])
         
         return results, memory
     
@@ -182,7 +182,7 @@ class Director:
             print('\n')
             
             memory.clear_stmemory()
-            
+
             if memory.isFull():
                 
                 # ####### RETRAINING ########
@@ -190,7 +190,7 @@ class Director:
                 self.current_player.replay(memory)
                 print('')
                 
-                if iteration % 5 == 0:
+                if iteration % 1 == 0:
                     strIteration = str(iteration).zfill(4)
                     pickle.dump(memory, open((config.outRunPath(f"memory/memory{strIteration}.p")), "wb"))
                 

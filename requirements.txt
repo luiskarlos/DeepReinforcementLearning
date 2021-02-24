@@ -10,3 +10,4 @@ pydot-ng~=1.0.0
 setuptools
 graphviz
 jupyter
+methodtools
