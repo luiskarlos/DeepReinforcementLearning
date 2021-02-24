@@ -55,11 +55,11 @@ class Agent:
         lg.logger_mcts.info('CURRENT PLAYER...%d', self.mcts.root.state.playerTurn)
         
         # ### MOVE THE LEAF NODE
-        leaf, value, done, breadcrumbs = self.mcts.moveToLeaf()
+        leaf, winner, done, breadcrumbs = self.mcts.moveToLeaf()
         leaf.state.render(lg.logger_mcts)
         
         # ### EVALUATE THE LEAF NODE
-        value, breadcrumbs = self.evaluateLeaf(leaf, value, done, breadcrumbs)
+        value, breadcrumbs = self.evaluateLeaf(leaf, winner, done, breadcrumbs)
         
         # ### BACKFILL THE VALUE THROUGH THE TREE
         self.mcts.backFill(leaf, value, breadcrumbs)
@@ -79,21 +79,21 @@ class Agent:
             self.simulate()
         
         # ### get action values
-        pi, values = self.getActionValue(1)
+        actionValues, values = self.getActionValue(1)
         
         # ###pick the action
-        action, value = self.chooseAction(pi, values, tau)
+        action, value = self.chooseAction(actionValues, values, tau)
         
         nextState = state.takeAction(action)
         
         NN_value = -self.get_preds(nextState)[0]
         
-        lg.logger_mcts.info('ACTION VALUES...%s', pi)
+        lg.logger_mcts.info('ACTION VALUES...%s', actionValues)
         lg.logger_mcts.info('CHOSEN ACTION...%d', action)
         lg.logger_mcts.info('MCTS PERCEIVED VALUE...%f', value)
         lg.logger_mcts.info('NN PERCEIVED VALUE...%f', NN_value)
         
-        return action, pi, value, NN_value
+        return action, actionValues, value, NN_value
     
     def get_preds(self, state):
         # predict the leaf
@@ -106,7 +106,7 @@ class Agent:
         
         logits = logits_array[0]
         
-        allowedActions = state.allowedActions
+        allowedActions = state.allowedActions()
         
         mask = np.ones(logits.shape, dtype=bool)
         mask[allowedActions] = False
@@ -140,31 +140,31 @@ class Agent:
                     lg.logger_mcts.info('existing node...%s...', node.id)
                 
                 newEdge = Edge(leaf, node, probs[idx], action)
-                leaf.edges.append((action, newEdge))
+                leaf.add(action, newEdge)
         
         else:
             lg.logger_mcts.info('GAME VALUE FOR %d: %f', leaf.playerTurn, value)
         
         return value, breadcrumbs
     
-    def getActionValue(self, tau):
+    def getActionValue(self, tau) -> ([int], [float]):
         edges = self.mcts.root.edges
-        pi = np.zeros(self.action_size, dtype=np.integer)
+        actionValues = np.zeros(self.action_size, dtype=np.integer)
         values = np.zeros(self.action_size, dtype=np.float32)
         
         for action, edge in edges:
-            pi[action] = pow(edge[Stats.N], 1 / tau)
+            actionValues[action] = pow(edge[Stats.N], 1 / tau)
             values[action] = edge[Stats.Q]
-        
-        pi = pi / (np.sum(pi) * 1.0)
-        return pi, values
+
+        actionValues = actionValues / (np.sum(actionValues) * 1.0)
+        return actionValues, values
     
-    def chooseAction(self, pi, values, tau):
+    def chooseAction(self, actionValues: [int], values: [float], tau: int):
         if tau == 0:
-            actions = np.argwhere(pi == max(pi))
+            actions = np.argwhere(actionValues == max(actionValues))
             action = random.choice(actions)[0]
         else:
-            action_idx = np.random.multinomial(1, pi)
+            action_idx = np.random.multinomial(1, actionValues)
             action = np.where(action_idx == 1)[0][0]
         
         value = values[action]

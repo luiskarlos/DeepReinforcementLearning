@@ -20,7 +20,7 @@ class Node:
     def __init__(self, state: IGameState):
         self.state = state
         self.playerTurn = state.playerTurn  # TODO: lk - remove this
-        self.id = state.id
+        self.id = state.id()
         self.edges: list[(int, 'Edge')] = []  # tuples of (action, edge)
     
     def edgesCount(self) -> int:
@@ -83,7 +83,7 @@ class Node:
 class Edge:
     
     def __init__(self, inNode: Node, outNode: Node, prior, action: int):
-        self.id = inNode.state.id + '|' + outNode.state.id
+        self.id = inNode.state.id() + '|' + outNode.state.id()
         self.inNode = inNode
         self.outNode = outNode
         self.playerTurn = inNode.state.playerTurn  # TODO: lk - remove this
@@ -126,7 +126,7 @@ class MCTS:
         currentNode = self.root
         
         done = 0
-        value = 0
+        winner = 0
         
         while not currentNode.isLeaf():
             lg.logger_mcts.info('PLAYER TURN...%d', currentNode.state.playerTurn)
@@ -136,15 +136,15 @@ class MCTS:
             lg.logger_mcts.info('action with highest Q + U...%d', simulationAction)
             
             newState = currentNode.state.takeAction(simulationAction)  # the value of the newState from the POV of the new playerTurn
-            done = newState.isFinish()
-            value = newState.getValue()
+            done = newState.isEndGame()
+            winner = newState.getWinner()
             
             currentNode = simulationEdge.outNode
             breadcrumbs.append(simulationEdge)
         
         lg.logger_mcts.info('DONE...%d', done)
         
-        return currentNode, value, done, breadcrumbs
+        return currentNode, winner, done, breadcrumbs
     
     @staticmethod
     def backFill(leaf: Node, value, breadcrumbs: [Edge]):

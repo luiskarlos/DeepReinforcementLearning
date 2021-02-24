@@ -18,18 +18,18 @@ class Memory:
 			self.short_term_memory.append({
 				'board': r[0].board
 				, 'state': r[0]
-				, 'id': r[0].id
+				, 'id': r[0].id()
 				, 'AV': r[1]
 				, 'playerTurn': r[0].playerTurn
 				})
 		return self
 
-	def commit_ltmemory(self, playerTurn, value) -> 'Memory':
+	def commit_ltmemory(self, playerTurn: int, winner: int) -> 'Memory':
 		for move in self.short_term_memory:
 			if move['playerTurn'] == playerTurn:
-				move['value'] = value
+				move['value'] = winner
 			else:
-				move['value'] = -value
+				move['value'] = -winner
 			self.long_term_memory.append(move)
 			
 		self.clear_stmemory()
