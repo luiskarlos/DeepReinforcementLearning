@@ -111,3 +111,4 @@ games/archive/
 run/logs
 run/memory
 test/run
+lab.py

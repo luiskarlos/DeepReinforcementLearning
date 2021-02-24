@@ -7,10 +7,13 @@ from shutil import copyfile
 from foundation.director import Director
 
 from games.Connect4Game import Connect4Game
+from games.ticTacToe import TTTGame
+
 from utils import loggers as lg, config
 from utils.config import run_archive_folder
 
-director = Director(gameProvider=lambda: Connect4Game())
+# director = Director(gameProvider=lambda: Connect4Game())
+director = Director(gameProvider=lambda: TTTGame())
 
 np.set_printoptions(suppress=True)
 # copy the config file to root
