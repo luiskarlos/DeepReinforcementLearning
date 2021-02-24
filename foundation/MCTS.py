@@ -125,8 +125,7 @@ class MCTS:
         breadcrumbs: [Edge] = []
         currentNode = self.root
         
-        done = 0
-        winner = 0
+        lastState = None
         
         while not currentNode.isLeaf():
             lg.logger_mcts.info('PLAYER TURN...%d', currentNode.state.playerTurn)
@@ -134,17 +133,14 @@ class MCTS:
             simulationAction, simulationEdge = currentNode.findMove(self.cpuct, currentNode == self.root)
             
             lg.logger_mcts.info('action with highest Q + U...%d', simulationAction)
-            
-            newState = currentNode.state.takeAction(simulationAction)  # the value of the newState from the POV of the new playerTurn
-            done = newState.isEndGame()
-            winner = newState.getWinner()
+
+            lastState = currentNode.state.takeAction(simulationAction)  # the value of the newState from the POV of the new playerTurn
             
             currentNode = simulationEdge.outNode
             breadcrumbs.append(simulationEdge)
-        
-        lg.logger_mcts.info('DONE...%d', done)
-        
-        return currentNode, winner, done, breadcrumbs
+
+        leaf = currentNode
+        return leaf, breadcrumbs, lastState
     
     @staticmethod
     def backFill(leaf: Node, value, breadcrumbs: [Edge]):

@@ -7,6 +7,7 @@ import matplotlib.pyplot as plt
 import matplotlib.pylab as pl
 
 from foundation.MCTS import MCTS, Stats, Node, Edge
+from foundation.igame import IGameState
 from utils import config, loggers as lg
 
 from IPython import display
@@ -50,23 +51,23 @@ class Agent:
     
     def simulate(self):
         
-        lg.logger_mcts.info('ROOT NODE...%s', self.mcts.root.state.id)
+        lg.logger_mcts.info('ROOT NODE...%s', self.mcts.root.state.id())
         self.mcts.root.state.render(lg.logger_mcts)
         lg.logger_mcts.info('CURRENT PLAYER...%d', self.mcts.root.state.playerTurn)
         
         # ### MOVE THE LEAF NODE
-        leaf, winner, done, breadcrumbs = self.mcts.moveToLeaf()
+        leaf, breadcrumbs, lastState = self.mcts.moveToLeaf()
         leaf.state.render(lg.logger_mcts)
         
         # ### EVALUATE THE LEAF NODE
-        value, breadcrumbs = self.evaluateLeaf(leaf, winner, done, breadcrumbs)
+        value = self.evaluateLeaf(leaf, lastState)
         
         # ### BACKFILL THE VALUE THROUGH THE TREE
         self.mcts.backFill(leaf, value, breadcrumbs)
     
     def act(self, state, tau):
         
-        if self.mcts is None or state.id not in self.mcts.idToNode:
+        if self.mcts is None or state.id() not in self.mcts.idToNode:
             self.buildMCTS(state)
         else:
             self.changeRootMCTS(state)
@@ -99,9 +100,9 @@ class Agent:
         # predict the leaf
         inputToModel = np.array([self.model.convertToModelInput(state)])
         
-        preds = self.model.predict(inputToModel)
-        value_array = preds[0]
-        logits_array = preds[1]
+        prediction = self.model.predict(inputToModel)
+        value_array = prediction[0]
+        logits_array = prediction[1]
         value = value_array[0]
         
         logits = logits_array[0]
@@ -118,34 +119,30 @@ class Agent:
         
         return value, probs, allowedActions
     
-    def evaluateLeaf(self, leaf, value, done, breadcrumbs):
+    def evaluateLeaf(self, leaf: Node, lastState: IGameState):
         
         lg.logger_mcts.info('------EVALUATING LEAF------')
-        
-        if done == 0:
+        inProgress = lastState is None or not lastState.isEndGame()
+        if inProgress:
             
             value, probs, allowedActions = self.get_preds(leaf.state)
             lg.logger_mcts.info('PREDICTED VALUE FOR %d: %f', leaf.state.playerTurn, value)
-            
-            probs = probs[allowedActions]
-            
-            for idx, action in enumerate(allowedActions):
+           
+            for action in allowedActions:
                 newState = leaf.state.takeAction(action)
-                if newState.id not in self.mcts.idToNode:
+                if newState.id() not in self.mcts.idToNode:
                     node = Node(newState)
                     self.mcts.addNode(node)
-                    lg.logger_mcts.info('added node...%s...p = %f', node.id, probs[idx])
-                else:
-                    node = self.mcts.idToNode[newState.id]
-                    lg.logger_mcts.info('existing node...%s...', node.id)
-                
-                newEdge = Edge(leaf, node, probs[idx], action)
+                    lg.logger_mcts.info('added node...%s...p = %f', node.id, probs[action])
+
+                node = self.mcts.idToNode[newState.id()]
+                newEdge = Edge(leaf, node, probs[action], action)
                 leaf.add(action, newEdge)
-        
         else:
+            value = 0 if lastState is None else lastState.getWinner()
             lg.logger_mcts.info('GAME VALUE FOR %d: %f', leaf.playerTurn, value)
         
-        return value, breadcrumbs
+        return value
     
     def getActionValue(self, tau) -> ([int], [float]):
         edges = self.mcts.root.edges
@@ -214,7 +211,7 @@ class Agent:
         self.mcts = MCTS(self.root, self.cpuct)
     
     def changeRootMCTS(self, state):
-        lg.logger_mcts.info('****** CHANGING ROOT OF MCTS TREE TO %s FOR AGENT %s ******', state.id, self.name)
-        self.mcts.root = self.mcts.idToNode[state.id]
+        lg.logger_mcts.info('****** CHANGING ROOT OF MCTS TREE TO %s FOR AGENT %s ******', state.id(), self.name)
+        self.mcts.root = self.mcts.idToNode[state.id()]
         
     

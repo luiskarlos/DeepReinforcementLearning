@@ -32,6 +32,7 @@ part of the article [How to build your own AlphaZero AI using Python and Keras](
 1. Change logger to [Resource provider](https://python-dependency-injector.ets-labs.org/providers/resource.html#resource-provider)
     1. Make logger less intrusive
     1. Improve log data
+    1. Consider the use of sampling to reduce the size
 1. Add stats to a DB (remove some logs)
 1. Update to tensorflow 2
 1. Add capacity to migrate models to [TensorFlow.js](https://www.tensorflow.org/js)

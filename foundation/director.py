@@ -210,7 +210,7 @@ class Director:
                     lg.logger_memory.info('THE MCTS ACTION VALUES: %s', ['%.2f' % elem for elem in s['AV']])
                     lg.logger_memory.info('CUR PRED ACTION VALUES: %s', ['%.2f' % elem for elem in current_probs])
                     lg.logger_memory.info('BES PRED ACTION VALUES: %s', ['%.2f' % elem for elem in best_probs])
-                    lg.logger_memory.info('ID: %s', s['state'].id)
+                    lg.logger_memory.info('ID: %s', s['state'].id())
                     lg.logger_memory.info('INPUT TO MODEL: %s',
                                           self.current_player.model.convertToModelInput(s['state']))
                     
